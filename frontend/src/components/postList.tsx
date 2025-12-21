@@ -12,7 +12,7 @@ interface Post {
   createdAt: string;
 }
 
-export default function PostList() {
+export default function PostList({searchQuery}: {searchQuery: string}) {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
@@ -36,9 +36,16 @@ export default function PostList() {
     await api.delete(`/posts/${_id}`);
   };
 
+  const sortedPosts = posts.filter((post) => {
+    const posts = post.title.toLocaleLowerCase();
+    const query = searchQuery.toLocaleLowerCase();
+
+    return posts.includes(query);
+  });
+
   return (
     <>
-      {posts.map((el) => (
+      {sortedPosts.map((el) => (
         <Card key={el._id} className="mb-[15px]">
           <Link to={`${el._id}`}>
             <CardHeader className="justify-between">

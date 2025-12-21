@@ -24,7 +24,7 @@ import {
 } from "@/components/icons";
 import { Logo } from "@/components/icons";
 
-export const Navbar = () => {
+export const Navbar = ({onSearch}: {onSearch: (val: string) => void}) => {
   const searchInput = (
     <Input
       aria-label="Search"
@@ -38,6 +38,7 @@ export const Navbar = () => {
         <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
       }
       type="search"
+      onChange={(e) => onSearch(e.target.value)}
     />
   );
 

@@ -2,12 +2,14 @@ import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
   children,
+  searchQuery,
 }: {
   children: React.ReactNode;
+  searchQuery: (val: string) => void;
 }) {
   return (
     <div className="relative flex flex-col h-screen">
-      <Navbar/>
+      <Navbar onSearch={searchQuery}/>
       <main className="container mx-auto max-w-7xl px-6 flex-grow pt-16">
         {children}
       </main>
