@@ -1,0 +1,73 @@
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/react";
+import { useEffect, useState } from "react";
+
+import api from "../../service/api.ts";
+import { Link } from "react-router-dom";
+
+interface Post {
+  _id: string;
+  title: string;
+  description: string;
+  commentCount: string;
+  createdAt: string;
+}
+
+export default function PostList() {
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    fetchData();
+
+    const intervalId = setInterval(fetchData, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await api.get("/posts");
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
+  const deletePost = async (_id: string) => {
+    await api.delete(`/posts/${_id}`);
+  };
+
+  return (
+    <>
+      {posts.map((el) => (
+        <Card key={el._id} className="mb-[15px]">
+          <Link to={`${el._id}`}>
+            <CardHeader className="justify-between">
+              <div className="flex gap-5">
+                <div className="flex flex-col gap-1 items-start justify-center">
+                  <h4 className="text-lg font-semibold leading-none text-default-600">
+                    {el.title}
+                  </h4>
+                  <h5 className="text-base">
+                    CreatedAt: {new Date(el.createdAt).toLocaleString()}
+                  </h5>
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="px-3 py-0 text-base text-default-400 overflow-y-hidden">
+              <p>{el.description}</p>
+            </CardBody>
+            <CardFooter className="gap-3">
+              <div className="flex gap-1">
+                <p className="font-semibold text-default-400 text-small">
+                  {el.commentCount}
+                </p>
+                <p className="text-default-400 text-small">Comments</p>
+              </div>
+            </CardFooter>
+          </Link>
+          <button onClick={() => deletePost(el._id)}>Delete</button>
+        </Card>
+      ))}
+    </>
+  );
+}
