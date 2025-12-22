@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import DBConnect from "./config/DBConnect.js";
 import postsRoutes from "./routes/Posts.routes.js";
 import commentsRoutes from "./routes/Comments.routes.js";
+import adminRoutes from "./routes/Admin.routes.js";
 
 dotenv.config();
 DBConnect();
@@ -16,8 +17,9 @@ app.use(express.json());
 
 app.use("/posts", postsRoutes);
 app.use("/comments", commentsRoutes);
+app.use("/admin", adminRoutes);
 
-const PORT = process.env.POST || 5555;
+const PORT = process.env.PORT || 5555;
 
 app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}/`);
