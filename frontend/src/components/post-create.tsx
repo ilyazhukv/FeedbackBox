@@ -57,19 +57,23 @@ export default function PostModal() {
               <ModalBody>
                 <Input
                   label="Title"
-                  placeholder="Title is required"
+                  placeholder="Enter title"
                   variant="bordered"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
+                  maxLength={120}
+                  description={`${formData.title.length}/120`}
                 />
                 <Input
                   label="Description"
-                  placeholder="Description is'nt required"
+                  placeholder="Enter description"
                   variant="bordered"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
+                  maxLength={1200}
+                  description={`${formData.description.length}/1200`}
                 />
               </ModalBody>
               <ModalFooter>

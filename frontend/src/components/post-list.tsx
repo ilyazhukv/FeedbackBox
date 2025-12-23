@@ -1,8 +1,9 @@
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import api from "../../service/api.ts";
-import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth.ts";
 
 interface Post {
   _id: string;
@@ -12,8 +13,9 @@ interface Post {
   createdAt: string;
 }
 
-export default function PostList({searchQuery}: {searchQuery: string}) {
+export default function PostList({ searchQuery }: { searchQuery: string }) {
   const [posts, setPosts] = useState<Post[]>([]);
+  const isAdmin = useAuth();
 
   useEffect(() => {
     fetchData();
@@ -33,7 +35,13 @@ export default function PostList({searchQuery}: {searchQuery: string}) {
   };
 
   const deletePost = async (_id: string) => {
-    await api.delete(`/posts/${_id}`);
+    if (!localStorage.getItem("token")) return;
+
+    try {
+      await api.delete(`/posts/${_id}`);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
   };
 
   const sortedPosts = posts.filter((post) => {
@@ -46,8 +54,11 @@ export default function PostList({searchQuery}: {searchQuery: string}) {
   return (
     <>
       {sortedPosts.map((el) => (
-        <Card key={el._id} className="mb-[15px]">
-          <Link to={`${el._id}`}>
+        <Card
+          key={el._id}
+          className="mb-[15px] transition duration-300 hover:scale-105 transform"
+        >
+          <Link to={`/post/${el._id}`}>
             <CardHeader className="justify-between">
               <div className="flex gap-5">
                 <div className="flex flex-col gap-1 items-start justify-center">
@@ -72,7 +83,14 @@ export default function PostList({searchQuery}: {searchQuery: string}) {
               </div>
             </CardFooter>
           </Link>
-          <button onClick={() => deletePost(el._id)}>Delete</button>
+          {isAdmin && (
+            <button
+              className="cursor-pointer hover:bg-red-600"
+              onClick={() => deletePost(el._id)}
+            >
+              Delete
+            </button>
+          )}
         </Card>
       ))}
     </>

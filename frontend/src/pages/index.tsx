@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import DefaultLayout from "@/layouts/default";
-import PostList from "@/components/postList";
-import PostModal from "@/components/postModal";
+import PostList from "@/components/post-list";
+import PostModal from "@/components/post-create";
 
 export default function IndexPage() {
   const [search, setSearch] = useState("");
