@@ -6,38 +6,32 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Input,
   Textarea,
 } from "@heroui/react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 import api from "../../service/api";
 
 interface FormData {
-  title: string;
-  description: string;
+  content: string;
 }
 
-export default function PostCreate() {
+export default function CommentCreate() {
+  const { id } = useParams<{ id: string }>();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [formData, setFormData] = useState<FormData>({
-    title: "",
-    description: "",
-  });
+  const [formData, setFormData] = useState<FormData>({ content: "" });
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { value } = event.target;
 
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+    setFormData({ content: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
-      api.post("/posts", formData);
-      setFormData({ title: "", description: "" });
+      await api.post(`/comments/${id}`, formData);
+      setFormData({ content: "" });
       onOpenChange();
     } catch (error) {
       console.error("Error: ", error);
@@ -47,42 +41,31 @@ export default function PostCreate() {
   return (
     <>
       <Button color="primary" onPress={onOpen}>
-        New Post
+        New Comment
       </Button>
       <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                New Post
+                New Comment
               </ModalHeader>
               <ModalBody>
-                <Input
-                  label="Title"
-                  placeholder="Enter title"
-                  variant="bordered"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  maxLength={120}
-                  description={`${formData.title.length}/120`}
-                />
                 <Textarea
-                  label="Description"
-                  placeholder="Enter description"
+                  label="Content"
+                  placeholder="Enter text"
                   variant="bordered"
-                  name="description"
-                  value={formData.description}
+                  value={formData.content}
                   onChange={handleChange}
-                  maxLength={1200}
-                  description={`${formData.description.length}/1200`}
+                  maxLength={3600}
+                  description={`${formData.content.length}/3600`}
                 />
               </ModalBody>
               <ModalFooter>
                 <Button
                   color="primary"
                   onClick={handleSubmit}
-                  isDisabled={!formData.title.trim()}
+                  isDisabled={!formData.content.trim()}
                 >
                   Create
                 </Button>

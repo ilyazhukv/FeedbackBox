@@ -5,7 +5,6 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
 } from "@heroui/navbar";
@@ -15,12 +14,11 @@ import clsx from "clsx";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
-  GithubIcon,
   SearchIcon,
 } from "@/components/icons";
 import { Logo } from "@/components/icons";
 
-import Registration from "./admin-activtion";
+import AdminActivation from "./admin-activation";
 
 export const Navbar = ({onSearch}: {onSearch: (val: string) => void}) => {
   const searchInput = (
@@ -80,16 +78,8 @@ export const Navbar = ({onSearch}: {onSearch: (val: string) => void}) => {
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Registration />
+          <AdminActivation />
         </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-        <NavbarMenuToggle />
       </NavbarContent>
 
       <NavbarMenu>

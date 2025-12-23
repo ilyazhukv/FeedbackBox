@@ -18,7 +18,7 @@ interface formData {
   password: string;
 }
 
-export default function Registration() {
+export default function AdminActivation() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [formData, setFormData] = useState<formData>({
     name: "",

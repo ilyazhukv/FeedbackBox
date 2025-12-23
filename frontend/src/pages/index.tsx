@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import DefaultLayout from "@/layouts/default";
-import PostList from "@/components/post-list";
-import PostModal from "@/components/post-create";
+import PostsList from "@/components/posts-list";
+import PostCreate from "@/components/post-create";
 
 export default function IndexPage() {
   const [search, setSearch] = useState("");
@@ -10,11 +10,11 @@ export default function IndexPage() {
   return (
     <DefaultLayout searchQuery={setSearch}>
       <section className="flex flex-col items-start justify-center gap-4 py-8 md:py-10">
-        <div>
-          <PostModal />
+        <div className="flex gap-[10px]">
+          <PostCreate />
         </div>
-        <div>
-          <PostList searchQuery={search}/>
+        <div className="w-full">
+          <PostsList searchQuery={search}/>
         </div>
       </section>
     </DefaultLayout>
