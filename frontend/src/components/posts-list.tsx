@@ -2,13 +2,15 @@ import { Card, CardHeader, CardBody, CardFooter } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import api from "../../service/api.ts";
+import api from "../../api/api.ts";
 import { useAuth } from "../../hooks/useAuth.ts";
 
 interface Post {
   _id: string;
   title: string;
   description: string;
+  type: string;
+  status: string;
   commentCount: string;
   createdAt: string;
 }
@@ -20,7 +22,7 @@ export default function PostsList({ searchQuery }: { searchQuery: string }) {
   useEffect(() => {
     fetchData();
 
-    const intervalId = setInterval(fetchData, 3000);
+    const intervalId = setInterval(fetchData, 5000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -64,6 +66,9 @@ export default function PostsList({ searchQuery }: { searchQuery: string }) {
           <Link to={`/post/${el._id}`} className="block">
             <CardHeader className="pb-1 pt-3 px-4">
               <div className="flex flex-col gap-0.5">
+                <span className="text-tiny uppercase font-bold">
+                  {el.status} {el.type}
+                </span>
                 <h4 className="text-xl font-bold text-foreground leading-tight">
                   {el.title}
                 </h4>
@@ -91,7 +96,7 @@ export default function PostsList({ searchQuery }: { searchQuery: string }) {
                   {el.commentCount}
                 </span>
                 <span className="text-[11px] uppercase text-default-500 font-medium">
-                  Comments
+                  Replies
                 </span>
               </div>
 

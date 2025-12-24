@@ -8,24 +8,41 @@ import {
   useDisclosure,
   Input,
   Textarea,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { useState } from "react";
 
-import api from "../../service/api";
+import api from "../../api/api";
 
 interface FormData {
   title: string;
   description: string;
+  type: string;
 }
 
-export default function PostCreate() {
+interface MetaData {
+  value: string;
+  label: string;
+}
+
+interface PostCreateProps {
+  meta: MetaData[];
+}
+
+export default function PostCreate({ meta }: PostCreateProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
+    type: "",
   });
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<
+      HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = event.target;
 
     setFormData((prevFormData) => ({
@@ -37,7 +54,7 @@ export default function PostCreate() {
   const handleSubmit = () => {
     try {
       api.post("/posts", formData);
-      setFormData({ title: "", description: "" });
+      setFormData({ title: "", description: "", type: "" });
       onOpenChange();
     } catch (error) {
       console.error("Error: ", error);
@@ -57,7 +74,20 @@ export default function PostCreate() {
                 New Post
               </ModalHeader>
               <ModalBody>
+                <Select
+                  isRequired
+                  className="max-w-xs"
+                  label="Type"
+                  placeholder="Select a type"
+                  name="type"
+                  onChange={handleChange}
+                >
+                  {meta.map((item) => (
+                    <SelectItem key={item.value}>{item.label}</SelectItem>
+                  ))}
+                </Select>
                 <Input
+                  isRequired
                   label="Title"
                   placeholder="Enter title"
                   variant="bordered"

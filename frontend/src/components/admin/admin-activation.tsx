@@ -11,7 +11,9 @@ import {
 
 import { HeartFilledIcon } from "@/components/icons";
 import React, { useState } from "react";
-import api from "../../service/api.js";
+import api from "../../../api/api.js";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth.js";
 
 interface formData {
   name: string;
@@ -24,6 +26,7 @@ export default function AdminActivation() {
     name: "",
     password: "",
   });
+  const isAdmin = useAuth();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -44,14 +47,25 @@ export default function AdminActivation() {
       if (token) {
         localStorage.setItem("token", token);
         window.location.reload();
-        alert("Admin rights obtained for an hour")
+        alert("Admin rights obtained for an hour");
       }
     } catch (error) {
       console.error("Error: ", error);
     }
   };
 
-  return (
+  return isAdmin ? (
+    <Link to={"/admin"}>
+      <Button
+        className="text-sm font-normal text-default-600 bg-default-100"
+        endContent={<HeartFilledIcon className="text-danger" />}
+        variant="flat"
+        color="primary"
+      >
+        Admin Only
+      </Button>
+    </Link>
+  ) : (
     <>
       <Button
         className="text-sm font-normal text-default-600 bg-default-100"

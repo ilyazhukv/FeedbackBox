@@ -2,35 +2,56 @@ import { useEffect, useState } from "react";
 
 import DefaultLayout from "@/layouts/default";
 import CommentsList from "@/components/comments-list";
-import CommentCreate from "@/components/comment-create";
-import api from "../../service/api";
+import CommentCreate from "@/components/admin/comment-create";
+import api from "../../api/api";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import StatusChange from "@/components/admin/status-change";
 
 interface Post {
   _id: string;
   title: string;
   description: string;
+  type: string;
+  status: string;
   commentCount: string;
   createdAt: string;
+}
+
+interface MetaData {
+  value: string;
+  label: string;
 }
 
 export default function DocsPage() {
   const [search, setSearch] = useState("");
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<Post>();
+  const [status, setStatus] = useState<MetaData[]>([]);
+  const isAdmin = useAuth();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get(`/posts/${id}`);
-        setPost(response.data);
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    };
-
     fetchData();
+    fetchDataStatus();
   }, [id]);
+
+  const fetchData = async () => {
+    try {
+      const postData = await api.get(`/posts/${id}`);
+      setPost(postData.data);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
+  const fetchDataStatus = async () => {
+    try {
+      const statusData = await api.get(`/meta/post/${id}`);
+      setStatus(statusData.data);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
 
   return post ? (
     <DefaultLayout searchQuery={setSearch}>
@@ -54,7 +75,12 @@ export default function DocsPage() {
                   <span className="font-bold">{post.commentCount}</span> Replies
                 </span>
               </div>
-              <CommentCreate />
+              {isAdmin && (
+                <div>
+                  <CommentCreate />
+                  <StatusChange meta={status} />
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -66,9 +92,7 @@ export default function DocsPage() {
   ) : (
     <DefaultLayout searchQuery={setSearch}>
       <div className="flex justify-center items-center h-full">
-        <p className="text-default-400 font-mono animate-pulse">
-          Loading report...
-        </p>
+        <p className="text-default-400 font-mono animate-pulse">Loading...</p>
       </div>
     </DefaultLayout>
   );

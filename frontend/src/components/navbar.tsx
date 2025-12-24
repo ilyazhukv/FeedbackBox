@@ -18,7 +18,7 @@ import {
 } from "@/components/icons";
 import { Logo } from "@/components/icons";
 
-import AdminActivation from "./admin-activation";
+import AdminActivation from "./admin/admin-activation";
 
 export const Navbar = ({onSearch}: {onSearch: (val: string) => void}) => {
   const searchInput = (

@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-import api from "../../service/api";
+import api from "../../../api/api";
 
 interface FormData {
   content: string;
@@ -22,7 +22,9 @@ export default function CommentCreate() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [formData, setFormData] = useState<FormData>({ content: "" });
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
     const { value } = event.target;
 
     setFormData({ content: value });
