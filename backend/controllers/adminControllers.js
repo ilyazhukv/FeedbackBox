@@ -1,25 +1,8 @@
+import { POST_STATUS, POST_TYPE, createOrderMap, groupByAndOrder } from "../config/constants.js";
 import Admin from "../models/adminSchema.js";
 import Post from "../models/postSchema.js";
 import bcrypt from "bcryptjs";
 import JWT from "jsonwebtoken";
-
-const groupByAndOrder = (field, orderMap) => [
-  { $group: { _id: `$${field}`, count: { $sum: 1 } } },
-  {
-    $addFields: {
-      order: {
-        $switch: {
-          branches: Object.entries(orderMap).map(([value, priority]) => ({
-            case: { $eq: ["$_id", value] },
-            then: priority,
-          })),
-          default: 99,
-        },
-      },
-    },
-  },
-  { $sort: { order: 1 } },
-];
 
 export const loginAdmin = async (req, res) => {
   try {
@@ -31,7 +14,7 @@ export const loginAdmin = async (req, res) => {
 
     if (!await bcrypt.compare(password, admin.password)) return res.status(400).json({ message: "Incorrect password" });
 
-    const token = JWT.sign({ adminId: admin._id, name: admin.name }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = JWT.sign({ adminId: admin._id, name: admin.name }, process.env.JWT_SECRET, { expiresIn: "4h" });
     res.json({ token });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -64,23 +47,15 @@ export const getStats = async (req, res) => {
       {
         $facet: {
           "total": [{ $count: "count" }],
-          "byType": groupByAndOrder("type", {
-            "complaint": 1,
-            "suggestion": 2,
-            "feedback": 3,
-          }),
-          "byStatus": groupByAndOrder("status", {
-            "new": 1,
-            "in-progress": 2,
-            "resolved": 3,
-          })
+          "byType": groupByAndOrder("type", createOrderMap(POST_TYPE)),
+          "byStatus": groupByAndOrder("status", createOrderMap(POST_STATUS))
         }
       },
       {
         $project: {
           total: { $ifNull: [{ $arrayElemAt: ["$total.count", 0] }, 0] },
-          byType: "$byType",
-          byStatus: "$byStatus"
+          byType: 1,
+          byStatus: 1
         }
       }
     ]);

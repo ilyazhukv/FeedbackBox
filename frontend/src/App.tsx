@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import IndexPage from "@/pages/index";
 import PostPage from "@/pages/post-page";
@@ -8,17 +9,21 @@ import AdminDashboard from "./pages/admin/dashboard";
 import AdminLayout from "./layouts/admin";
 
 function App() {
-  return (
-    <Routes>
-      <Route element={<IndexPage />} path="/" />
-      <Route element={<PostPage />} path="/post/:id" />
+  const queryClient = new QueryClient();
 
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AdminLayout />} path="/admin">
-          <Route element={<AdminDashboard />} index />
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route element={<IndexPage />} path="/" />
+        <Route element={<PostPage />} path="/post/:id" />
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />} path="/admin">
+            <Route element={<AdminDashboard />} index />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </QueryClientProvider>
   );
 }
 

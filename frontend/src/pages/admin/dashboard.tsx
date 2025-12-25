@@ -1,40 +1,38 @@
 import { Card, CardHeader, CardBody } from "@heroui/react";
-import { useEffect, useState } from "react";
 import api from "../../../api/api";
+import { useQuery } from "@tanstack/react-query";
 
-interface Stats {
+interface StatItem {
+  _id: string;
+  count: number;
+}
+
+interface StatsResponse {
   total: number;
-  byType: {
-    _id: string;
-    count: number;
-  }[];
-  byStatus: {
-    _id: string;
-    count: number;
-  }[];
+  byType: StatItem[];
+  byStatus: StatItem[];
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
-
-  useEffect(() => {
-    fetchData();
-
-    const intervalId = setInterval(() => fetchData, 5000);
-
-    return () =>  clearInterval(intervalId);
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await api.get("/admin/stats");
-      setStats(response.data);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
+  const fetchData = async (): Promise<StatsResponse> => {
+    const response = await api.get("/admin/stats");
+    return response.data;
   };
 
-  return stats ? (
+  const {
+    data: stats,
+    isLoading,
+    isError,
+  } = useQuery<StatsResponse>({
+    queryKey: ["stats"],
+    queryFn: fetchData,
+    refetchInterval: 5000,
+  });
+
+  if (isLoading) return <div className="p-8 text-default-400 font-mono">Loading...</div>;
+  if (isError || !stats) return <div className="p-8 text-default-400 font-mono">Error or no data</div>;
+
+  return (
     <div className="flex flex-col gap-6 p-4 ">
       <div>
         <h1 className="text-2xl font-bold uppercase tracking-wider text-white">
@@ -105,7 +103,5 @@ export default function AdminDashboard() {
         ))}
       </div>
     </div>
-  ) : (
-    <div className="p-8 text-default-400 font-mono">Loading...</div>
   );
 }

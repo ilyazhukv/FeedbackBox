@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import api from "../../../api/api.ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface FormData {
   status: string;
@@ -28,6 +29,7 @@ interface PostUpdateProps {
 }
 
 export default function StatusChange({ meta }: PostUpdateProps) {
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [formData, setFormData] = useState<FormData>({ status: "" });
@@ -38,15 +40,18 @@ export default function StatusChange({ meta }: PostUpdateProps) {
     setFormData({ status: value });
   };
 
-  const handleSubmit = async () => {
-    try {
-      await api.put(`/posts/update/${id}`, formData);
-      setFormData({ status: "" });
+  const mutation = useMutation({
+    mutationFn: (updateData: FormData) =>
+      api.put(`/posts/update/${id}`, updateData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post", id] });
+      window.location.reload();
       onOpenChange();
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  };
+    },
+    onError: (err) => {
+      console.error("Update error:", err);
+    },
+  });
 
   return (
     <>
@@ -74,7 +79,12 @@ export default function StatusChange({ meta }: PostUpdateProps) {
               <ModalFooter>
                 <Button
                   color="primary"
-                  onClick={handleSubmit}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (window.confirm("Opdate status?")) {
+                      mutation.mutate(formData);
+                    }
+                  }}
                   isDisabled={!formData.status}
                 >
                   Set

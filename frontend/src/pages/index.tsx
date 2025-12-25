@@ -1,31 +1,33 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import DefaultLayout from "@/layouts/default";
 import PostsList from "@/components/posts-list";
 import PostCreate from "@/components/post-create";
 import api from "../../api/api";
-
-interface MetaData {
-  value: string;
-  label: string;
-}
+import { useQuery } from "@tanstack/react-query";
 
 export default function IndexPage() {
   const [search, setSearch] = useState("");
-  const [meta, setMeta] = useState<MetaData[]>([]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await api.get("/meta/post");
-      setMeta(response.data);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
+  const fetchMetaData = async () => {
+    const response = await api.get("/meta");
+    return response.data[0];
   };
+
+  const {
+    data: meta,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["metaData"],
+    queryFn: fetchMetaData,
+  });
+
+  if (isLoading)
+    return <div className="p-8 text-default-400 font-mono">Is loading...</div>;
+  if (isError)
+    return <div className="p-8 text-default-400 font-mono">Error: {error.message}</div>;
 
   return (
     <DefaultLayout searchQuery={setSearch}>

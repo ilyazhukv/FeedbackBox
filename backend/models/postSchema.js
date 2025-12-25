@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { POST_TYPE, POST_STATUS } from "../config/post.constants.js";
+import { POST_TYPE, POST_STATUS } from "../config/constants.js";
 
 const postSchema = new mongoose.Schema({
   title: { type: String, required: true, maxLength: 120 },

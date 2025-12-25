@@ -60,10 +60,10 @@ A full-stack feedback management system designed for collecting, organizing, and
 - Navigate to the backend folder.
 - Install dependencies: npm install.
 - Create a .env file and configure:
-  PORT=5000
-  MONGO_URI=your_mongodb_uri
-  JWT_SECRET=your_jwt_secret
-  SALT_WORK_FACTOR=10
+- PORT=5000
+- MONGO_URI=your_mongodb_uri
+- JWT_SECRET=your_jwt_secret
+- SALT_WORK_FACTOR=10
 - Start the server: npm run dev.
 
 3. **Frontend Setup:**
